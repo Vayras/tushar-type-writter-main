@@ -25,10 +25,11 @@ let correctChars = 0;
 let totalChars = 0;
 let timer = 60;
 let interval;
+let startTime;
+let charsTyped = 0; // Track the number of characters typed
 
 function updateDisplay() {
     textDisplay.innerHTML = '';
-    correctChars = 0; // Reset correct characters count for this update
     for (let i = 0; i < linesDisplayed; i++) {
         const lineIndex = currentIndex + i;
         if (lineIndex < lines.length) {
@@ -59,13 +60,15 @@ function updateDisplay() {
 function endSession() {
     clearInterval(interval);
     const accuracy = (correctChars / totalChars) * 100;
-    const wpm = (correctChars / 5) / (60 / timer);
+    const elapsedMinutes = (60 - timer) / 60;
+    const wpm = (charsTyped / 5) / elapsedMinutes;
     console.log(`Accuracy: ${accuracy.toFixed(2)}%`);
     console.log(`Words Per Minute: ${wpm.toFixed(2)}`);
     alert(`Time's up!\nAccuracy: ${accuracy.toFixed(2)}%\nWords Per Minute: ${wpm.toFixed(2)}`);
 }
 
 function startTimer() {
+    startTime = new Date().getTime();
     interval = setInterval(() => {
         timer--;
         document.getElementById('timer').innerText = timer;
@@ -79,9 +82,11 @@ document.addEventListener('keydown', (event) => {
     if (event.key === 'Backspace') {
         if (userInput.length > 0) {
             userInput = userInput.slice(0, -1);
+            charsTyped--; // Decrement characters typed
         }
     } else if (event.key.length === 1) {
         userInput += event.key;
+        charsTyped++; // Increment characters typed
     }
 
     const currentLine = lines[currentIndex];
